@@ -27,13 +27,13 @@ export const matchesApi = {
 
   get: (id) => apiFetch(`/api/matches/${id}`),
 
-  score: (id, player, undo = false) => apiFetch(`/api/matches/${id}/score`, {
+  score: (id, player, token, undo = false) => apiFetch(`/api/matches/${id}/score`, {
     method: 'PUT',
-    body: JSON.stringify({ player, undo }),
+    body: JSON.stringify({ player, token, undo }),
   }),
 
-  end: (id, winner) => apiFetch(`/api/matches/${id}/end`, {
+  end: (id, winner, token) => apiFetch(`/api/matches/${id}/end`, {
     method: 'PUT',
-    body: JSON.stringify({ status: 'completed', winner }),
+    body: JSON.stringify({ status: 'completed', winner, token }),
   }),
 }

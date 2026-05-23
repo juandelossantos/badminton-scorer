@@ -31,8 +31,15 @@ try {
                 exit();
             }
             
+            $token = $input['token'] ?? '';
+            if (empty($token)) {
+                http_response_code(401);
+                echo json_encode(['error' => 'Control token is required']);
+                exit();
+            }
+            
             $undo = $input['undo'] ?? false;
-            $match = $matchModel->updateScore($id, $input['player'], $undo);
+            $match = $matchModel->updateScore($id, $input['player'], $token, $undo);
             
             echo json_encode($match);
             break;

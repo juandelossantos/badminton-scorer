@@ -13,15 +13,15 @@ function ShareURL() {
     return null
   }
 
-  const controllerUrl = `${window.location.origin}/match/${match.id}`
-  const tvUrl = `${window.location.origin}/match/${match.id}/tv`
+  const controllerUrl = `${window.location.origin}/match/${match.id}?token=${match.control_token}`
+  const tvUrl = `${window.location.origin}/watch/${match.id}`
 
   const handleCopy = (url) => {
     navigator.clipboard.writeText(url)
   }
 
   const handleStart = () => {
-    navigate(`/match/${match.id}`)
+    navigate(`/match/${match.id}?token=${match.control_token}`)
   }
 
   return (

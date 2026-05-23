@@ -15,7 +15,7 @@ function App() {
         <Route path="/create" element={<CreateMatch />} />
         <Route path="/share" element={<ShareURL />} />
         <Route path="/match/:matchId" element={<Match />} />
-        <Route path="/match/:matchId/tv" element={<MatchTV />} />
+        <Route path="/watch/:matchId" element={<MatchTV />} />
         <Route path="/match/:matchId/celebration" element={<Celebration />} />
       </Routes>
     </ThemeProvider>

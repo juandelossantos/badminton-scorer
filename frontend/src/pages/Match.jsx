@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import { matchesApi } from '../api/matches'
 import useSound from '../hooks/useSound'
@@ -9,6 +9,8 @@ import { SunIcon, MoonIcon } from '../components/common/Icons'
 function Match() {
   const { matchId } = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const controlToken = searchParams.get('token') || ''
   const { theme, toggleTheme } = useTheme()
   const { playPoint, playSetWon, playMatchWon } = useSound()
   const [match, setMatch] = useState(null)
@@ -40,10 +42,14 @@ function Match() {
   }, [fetchMatch])
 
   const handleScore = async (player) => {
+    if (!controlToken) {
+      setError('Token de control requerido')
+      return
+    }
     try {
       const prevSet = match?.current_set
       const prevSetsCount = match?.sets?.length || 0
-      const updated = await matchesApi.score(matchId, player)
+      const updated = await matchesApi.score(matchId, player, controlToken)
       setMatch(updated)
       setShareVisible(false)
 
@@ -61,8 +67,12 @@ function Match() {
   }
 
   const handleUndo = async (player) => {
+    if (!controlToken) {
+      setError('Token de control requerido')
+      return
+    }
     try {
-      const updated = await matchesApi.score(matchId, player, true)
+      const updated = await matchesApi.score(matchId, player, controlToken, true)
       setMatch(updated)
     } catch (err) {
       setError(err.message)
@@ -70,13 +80,17 @@ function Match() {
   }
 
   const handleEndMatch = async () => {
+    if (!controlToken) {
+      setError('Token de control requerido')
+      return
+    }
     if (!window.confirm('¿Finalizar partido?')) return
     try {
       // Determine current winner based on sets won
       const p1Sets = match.sets.filter(s => s.p1 > s.p2).length
       const p2Sets = match.sets.filter(s => s.p2 > s.p1).length
       const winner = p1Sets > p2Sets ? 1 : p1Sets < p2Sets ? 2 : null
-      await matchesApi.end(matchId, winner)
+      await matchesApi.end(matchId, winner, controlToken)
       navigate(`/match/${matchId}/celebration`)
     } catch (err) {
       setError(err.message)
@@ -84,7 +98,7 @@ function Match() {
   }
 
   const handleShare = () => {
-    const tvUrl = `${window.location.origin}/match/${matchId}/tv`
+    const tvUrl = `${window.location.origin}/watch/${matchId}`
     navigator.clipboard.writeText(tvUrl)
   }
 

@@ -27,7 +27,7 @@ class MatchScoreTest extends TestCase
             'player2' => ['Pedro']
         ]);
 
-        $updated = $this->matchModel->updateScore($match['id'], 1);
+        $updated = $this->matchModel->updateScore($match['id'], 1, $match['control_token']);
         
         $this->assertEquals(['p1' => 1, 'p2' => 0], $updated['current_score']);
         $this->assertEquals(1, $updated['server']); // Server stays with winner
@@ -41,7 +41,7 @@ class MatchScoreTest extends TestCase
             'player2' => ['Pedro']
         ]);
 
-        $updated = $this->matchModel->updateScore($match['id'], 2);
+        $updated = $this->matchModel->updateScore($match['id'], 2, $match['control_token']);
         
         $this->assertEquals(['p1' => 0, 'p2' => 1], $updated['current_score']);
         $this->assertEquals(2, $updated['server']); // Server changes to winner
@@ -59,7 +59,7 @@ class MatchScoreTest extends TestCase
         $this->db->prepare("UPDATE matches SET current_p1 = 20 WHERE id = :id")
             ->execute([':id' => $match['id']]);
 
-        $updated = $this->matchModel->updateScore($match['id'], 1);
+        $updated = $this->matchModel->updateScore($match['id'], 1, $match['control_token']);
         
         $this->assertEquals(['p1' => 0, 'p2' => 0], $updated['current_score']);
         $this->assertEquals(2, $updated['current_set']);
@@ -80,7 +80,7 @@ class MatchScoreTest extends TestCase
             ->execute([':id' => $match['id']]);
 
         // P1 scores - should be 21-20, set not won yet
-        $updated = $this->matchModel->updateScore($match['id'], 1);
+        $updated = $this->matchModel->updateScore($match['id'], 1, $match['control_token']);
         $this->assertEquals(['p1' => 21, 'p2' => 20], $updated['current_score']);
         $this->assertEquals(1, $updated['current_set']);
     }
@@ -98,7 +98,7 @@ class MatchScoreTest extends TestCase
             ->execute([':id' => $match['id']]);
 
         // P1 scores - should win set at 30-29
-        $updated = $this->matchModel->updateScore($match['id'], 1);
+        $updated = $this->matchModel->updateScore($match['id'], 1, $match['control_token']);
         
         $this->assertEquals(['p1' => 0, 'p2' => 0], $updated['current_score']);
         $this->assertEquals(2, $updated['current_set']);
@@ -114,11 +114,11 @@ class MatchScoreTest extends TestCase
         ]);
 
         // Add 2 points to P1
-        $this->matchModel->updateScore($match['id'], 1);
-        $this->matchModel->updateScore($match['id'], 1);
+        $this->matchModel->updateScore($match['id'], 1, $match['control_token']);
+        $this->matchModel->updateScore($match['id'], 1, $match['control_token']);
         
         // Undo 1 point
-        $updated = $this->matchModel->updateScore($match['id'], 1, true);
+        $updated = $this->matchModel->updateScore($match['id'], 1, $match['control_token'], true);
         
         $this->assertEquals(['p1' => 1, 'p2' => 0], $updated['current_score']);
     }
@@ -132,7 +132,7 @@ class MatchScoreTest extends TestCase
         ]);
 
         // Undo when score is 0-0
-        $updated = $this->matchModel->updateScore($match['id'], 1, true);
+        $updated = $this->matchModel->updateScore($match['id'], 1, $match['control_token'], true);
         
         $this->assertEquals(['p1' => 0, 'p2' => 0], $updated['current_score']);
     }
@@ -148,12 +148,12 @@ class MatchScoreTest extends TestCase
         // Win first set: put P1 at 20, then score
         $this->db->prepare("UPDATE matches SET current_p1 = 20 WHERE id = :id")
             ->execute([':id' => $match['id']]);
-        $this->matchModel->updateScore($match['id'], 1);
+        $this->matchModel->updateScore($match['id'], 1, $match['control_token']);
 
         // Win second set: put P1 at 20 in set 2, then score
         $this->db->prepare("UPDATE matches SET current_p1 = 20 WHERE id = :id")
             ->execute([':id' => $match['id']]);
-        $this->matchModel->updateScore($match['id'], 1);
+        $this->matchModel->updateScore($match['id'], 1, $match['control_token']);
         
         $updated = $this->matchModel->getById($match['id']);
         
@@ -176,11 +176,11 @@ class MatchScoreTest extends TestCase
         for ($set = 0; $set < 2; $set++) {
             $this->db->prepare("UPDATE matches SET current_p1 = 20 WHERE id = :id")
                 ->execute([':id' => $match['id']]);
-            $this->matchModel->updateScore($match['id'], 1);
+            $this->matchModel->updateScore($match['id'], 1, $match['control_token']);
         }
         
         // Try to update score on completed match
-        $this->matchModel->updateScore($match['id'], 1);
+        $this->matchModel->updateScore($match['id'], 1, $match['control_token']);
     }
 
     public function testServiceSideResetsToRightOnNewSet(): void
@@ -194,7 +194,7 @@ class MatchScoreTest extends TestCase
         // Win first set
         $this->db->prepare("UPDATE matches SET current_p1 = 20 WHERE id = :id")
             ->execute([':id' => $match['id']]);
-        $this->matchModel->updateScore($match['id'], 1);
+        $this->matchModel->updateScore($match['id'], 1, $match['control_token']);
         
         $updated = $this->matchModel->getById($match['id']);
         

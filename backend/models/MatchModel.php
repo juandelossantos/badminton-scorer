@@ -29,6 +29,11 @@ class MatchModel
         return $id;
     }
     
+    public function generateControlToken()
+    {
+        return bin2hex(random_bytes(16));
+    }
+    
     public function create($data)
     {
         // Validation
@@ -45,19 +50,20 @@ class MatchModel
         }
         
         $id = $this->generateId();
+        $controlToken = $this->generateControlToken();
         // Badminton rules: always best of 3 sets, 21 points per set
         $setsToWin = 2;
         $pointsPerSet = 21;
         
         $stmt = $this->db->prepare("
             INSERT INTO matches (
-                id, mode, player1_names, player2_names,
+                id, control_token, mode, player1_names, player2_names,
                 sets_to_win, points_per_set, status,
                 current_set, server, service_side,
                 current_p1, current_p2, sets_data,
                 created_at, updated_at
             ) VALUES (
-                :id, :mode, :player1, :player2,
+                :id, :control_token, :mode, :player1, :player2,
                 :sets_to_win, :points_per_set, 'active',
                 1, 1, 'right',
                 0, 0, :sets_data,
@@ -67,6 +73,7 @@ class MatchModel
         
         $stmt->execute([
             ':id' => $id,
+            ':control_token' => $controlToken,
             ':mode' => $data['mode'],
             ':player1' => json_encode($data['player1']),
             ':player2' => json_encode($data['player2']),
@@ -76,6 +83,17 @@ class MatchModel
         ]);
         
         return $this->getById($id);
+    }
+    
+    public function validateToken($id, $token)
+    {
+        $stmt = $this->db->prepare("SELECT control_token FROM matches WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        $row = $stmt->fetch();
+        
+        if (!$row || $row['control_token'] !== $token) {
+            throw new Exception('Unauthorized: invalid control token');
+        }
     }
     
     public function getById($id)
@@ -89,8 +107,10 @@ class MatchModel
         return $this->formatMatch($row);
     }
     
-    public function updateScore($id, $player, $undo = false)
+    public function updateScore($id, $player, $token, $undo = false)
     {
+        $this->validateToken($id, $token);
+        
         $match = $this->getById($id);
         if (!$match) {
             throw new Exception('Match not found');
@@ -238,6 +258,7 @@ class MatchModel
     {
         return [
             'id' => $row['id'],
+            'control_token' => $row['control_token'],
             'mode' => $row['mode'],
             'player1' => json_decode($row['player1_names'], true),
             'player2' => json_decode($row['player2_names'], true),

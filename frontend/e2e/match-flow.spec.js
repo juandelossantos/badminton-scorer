@@ -17,24 +17,26 @@ test.describe('Full match flow E2E', () => {
     })
     const match = await createRes.json()
     const matchId = match.id
+    const token = match.control_token
     expect(match.mode).toBe('singles')
     expect(match.sets_to_win).toBe(2)
     expect(match.points_per_set).toBe(21)
+    expect(token).toBeTruthy()
 
-    // Open controller in one context
+    // Open controller WITH token in URL
     const controllerContext = await browser.newContext({ viewport: { width: 375, height: 812 } })
     const controllerPage = await controllerContext.newPage()
-    await controllerPage.goto(`${FRONTEND_URL}/match/${matchId}`)
+    await controllerPage.goto(`${FRONTEND_URL}/match/${matchId}?token=${token}`)
 
     // Verify initial state on controller
     await expect(controllerPage.locator('.big-number.number-p1')).toHaveText('0')
     await expect(controllerPage.locator('.big-number.number-p2')).toHaveText('0')
     await expect(controllerPage.locator('.current-set-badge')).toHaveText('Set 1')
 
-    // Open TV in another context
+    // Open TV in another context (NEW /watch/:id route — no token needed)
     const tvContext = await browser.newContext({ viewport: { width: 1920, height: 1080 } })
     const tvPage = await tvContext.newPage()
-    await tvPage.goto(`${FRONTEND_URL}/match/${matchId}/tv`)
+    await tvPage.goto(`${FRONTEND_URL}/watch/${matchId}`)
 
     // Verify initial state on TV
     await expect(tvPage.locator('.tv-number-p1')).toHaveText('0')
@@ -67,18 +69,13 @@ test.describe('Full match flow E2E', () => {
     // Verify sets bar shows 0-0
     await expect(controllerPage.locator('.sets-score')).toContainText('0—0')
 
-    // Win the set for Juan (21-0 via API for speed)
-    const winSetRes = await fetch(`${API_URL}/api/matches/${matchId}/score`, {
+    // Verify that scoring WITHOUT token fails (security check)
+    const unauthorizedRes = await fetch(`${API_URL}/api/matches/${matchId}/score`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ player: 1 })
     })
-    const afterPoint = await winSetRes.json()
-
-    // Check if set was won or if we need more points
-    // We'll just verify the controller shows the current state
-    await controllerPage.reload()
-    await tvPage.reload()
+    expect(unauthorizedRes.status).toBe(401)
 
     // Close contexts
     await controllerContext.close()
@@ -98,13 +95,15 @@ test.describe('Full match flow E2E', () => {
     })
     const match = await createRes.json()
     const matchId = match.id
+    const token = match.control_token
     expect(match.mode).toBe('doubles')
     expect(match.player1).toEqual(['Juan', 'Maria'])
     expect(match.player2).toEqual(['Pedro', 'Ana'])
+    expect(token).toBeTruthy()
 
-    // Open controller
+    // Open controller WITH token
     const controllerPage = await browser.newPage({ viewport: { width: 375, height: 812 } })
-    await controllerPage.goto(`${FRONTEND_URL}/match/${matchId}`)
+    await controllerPage.goto(`${FRONTEND_URL}/match/${matchId}?token=${token}`)
     await controllerPage.waitForSelector('.player-names', { state: 'visible' })
 
     // Verify all 4 names appear (two .player-names elements, one per side)

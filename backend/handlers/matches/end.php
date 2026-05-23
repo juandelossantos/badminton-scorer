@@ -25,6 +25,15 @@ try {
                 exit();
             }
             
+            $token = $input['token'] ?? '';
+            if (empty($token)) {
+                http_response_code(401);
+                echo json_encode(['error' => 'Control token is required']);
+                exit();
+            }
+            
+            $matchModel->validateToken($id, $token);
+            
             $match = $matchModel->getById($id);
             if (!$match) {
                 http_response_code(404);
