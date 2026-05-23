@@ -774,15 +774,46 @@ body {
   text-align: center;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--space-xxl);
   z-index: 1;
+  padding: var(--space-xl);
 }
 
 .celebration-content h1 {
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  font-weight: 800;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.celebration-winner {
+  font-size: clamp(2rem, 8vw, 5rem);
   font-weight: 800;
   letter-spacing: 3px;
   color: var(--text-primary);
+  text-shadow: 0 0 60px rgba(255,255,255,0.15);
+}
+
+.celebration-score {
+  display: flex;
+  gap: var(--space-lg);
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.celebration-set {
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--surface);
+  border-radius: var(--r-md);
+}
+
+.celebration-sets {
+  font-size: clamp(0.8rem, 2vw, 1.2rem);
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text-muted);
 }
 
 /* ===== Responsive ===== */

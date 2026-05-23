@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import { matchesApi } from '../api/matches'
+import useSound from '../hooks/useSound'
 import CanchaBG from '../components/common/CanchaBG'
 import { SunIcon, MoonIcon } from '../components/common/Icons'
 
@@ -9,6 +10,7 @@ function Match() {
   const { matchId } = useParams()
   const navigate = useNavigate()
   const { theme, toggleTheme } = useTheme()
+  const { playPoint, playSetWon, playMatchWon } = useSound()
   const [match, setMatch] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -39,11 +41,19 @@ function Match() {
 
   const handleScore = async (player) => {
     try {
+      const prevSet = match?.current_set
+      const prevSetsCount = match?.sets?.length || 0
       const updated = await matchesApi.score(matchId, player)
       setMatch(updated)
       setShareVisible(false)
+
       if (updated.status === 'completed') {
+        playMatchWon()
         navigate(`/match/${matchId}/celebration`)
+      } else if (updated.current_set > prevSet || updated.sets.length > prevSetsCount) {
+        playSetWon()
+      } else {
+        playPoint()
       }
     } catch (err) {
       setError(err.message)
