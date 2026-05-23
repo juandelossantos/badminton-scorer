@@ -1,163 +1,211 @@
-# 🚀 Deployment Guide
-
-## Target
-- **Domain:** https://badminton-scorer.deunaybienbonito.com
-- **Database:** MySQL on shared hosting
+# 🚀 Deployment Guide — Badminton Scorer
+# Domain: https://badminton-scorer.deunaybienbonito.com
+# Hosting: Shared hosting (cPanel) — NO subdomain available
 
 ---
 
-## Step 1: Prepare Database (via phpMyAdmin or cPanel)
+## Overview
 
-1. Log in to your hosting cPanel
+This guide deploys everything into a single `public_html/` folder:
+- Frontend (React SPA) at the root
+- Backend (PHP API) in subfolders (`handlers/`, `config/`, `models/`, `vendor/`)
+
+**URLs after deploy:**
+- Frontend: `https://badminton-scorer.deunaybienbonito.com`
+- API: `https://badminton-scorer.deunaybienbonito.com/api/matches`
+
+---
+
+## Step 1: Database Setup
+
+1. Log in to your hosting **cPanel**
 2. Open **phpMyAdmin**
-3. Select database `huitacad_badmintonscore`
-4. Go to **Import** tab
-5. Upload `database/prod-setup.sql`
+3. Select your database `huitacad_badmintonscore`
+4. Go to the **Import** tab
+5. Choose file: `database/prod-setup.sql` (from this repo)
 6. Click **Go**
 
-✅ Table `matches` should be created.
+✅ The `matches` table should be created with all columns.
 
 ---
 
-## Step 2: Configure Backend Environment
+## Step 2: Upload Frontend (Build)
 
-1. In the root of your hosting account (same level as `public_html/`), create a file named `.env`:
+On your local machine:
 
 ```bash
-DB_HOST=localhost
-DB_NAME=huitacad_badmintonscore
-DB_USER=huitacad_badmintonscore
-DB_PASS=D1L2CXMvJf.H
-```
-
-2. Upload `backend/.env.example` content to `.env` (same folder level as `public_html/`)
-
----
-
-## Step 3: Upload Backend Files
-
-1. In your hosting file manager, create a folder outside public_html (recommended):
-   ```
-   /home/youruser/badminton-api/
-   ```
-
-2. Upload all files from `backend/` folder to this location
-
-3. Create a symlink or subdomain pointing to this folder
-   
-   **Option A (Subdomain):**
-   - Create subdomain `api.badminton-scorer.deunaybienbonito.com`
-   - Point it to `/home/youruser/badminton-api/`
-   
-   **Option B (Subfolder in public_html):**
-   - Create folder `public_html/api/`
-   - Upload backend files there
-   - ⚠️ Less secure, but simpler
-
----
-
-## Step 4: Configure Frontend API URL
-
-The file `frontend/.env.production` already has:
-```
-VITE_API_URL=https://badminton-scorer.deunaybienbonito.com/api
-```
-
-If using a subdomain:
-```
-VITE_API_URL=https://api.badminton-scorer.deunaybienbonito.com
-```
-
----
-
-## Step 5: Build & Upload Frontend
-
-```bash
-# On your local machine:
 cd frontend/
 npm install
 npm run build
 ```
 
-1. This creates a `dist/` folder
-2. Upload ALL contents of `dist/` to your hosting `public_html/`
-3. The files should include:
-   - `index.html`
-   - `assets/` (JS and CSS bundles)
-
----
-
-## Step 6: Configure .htaccess for SPA Routing
-
-Create or update `public_html/.htaccess`:
-
-```apache
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
-</IfModule>
+This creates a `dist/` folder containing:
+```
+dist/
+  ├── index.html
+  └── assets/
+      ├── index-XXXX.js
+      ├── index-XXXX.css
+      └── ...
 ```
 
-This ensures React Router works correctly (all routes serve index.html).
+**Upload ALL contents of `dist/` to your hosting `public_html/` folder.**
+
+Result should be:
+```
+public_html/
+  ├── index.html          ← from dist/
+  └── assets/             ← from dist/
+      ├── index-XXXX.js
+      └── index-XXXX.css
+```
 
 ---
 
-## Step 7: Verify Deployment
+## Step 3: Upload Backend
 
-Test these URLs:
-- `https://badminton-scorer.deunaybienbonito.com` → Home page ✅
-- `https://badminton-scorer.deunaybienbonito.com/api/health` → `{"status":"ok"}` ✅
-- Create a match and verify it works end-to-end
+**Create these folders inside `public_html/`:**
+```
+public_html/
+  ├── handlers/           ← upload from backend/handlers/
+  │   ├── health.php
+  │   └── matches/
+  │       ├── create.php
+  │       ├── read.php
+  │       ├── score.php
+  │       └── end.php
+  ├── models/           ← upload from backend/models/
+  │   └── MatchModel.php
+  ├── config/           ← upload from backend/config/
+  │   └── database.php
+  └── vendor/           ← upload from backend/vendor/
+      └── ... (composer dependencies)
+```
+
+**Also upload these files to `public_html/`:**
+- `composer.json`
+- `composer.lock`
+- `index.php` (from backend/)
+
+**Note:** Do NOT upload `tests/`, `Dockerfile`, `phpunit.xml`, or `.env`.
+
+---
+
+## Step 4: Upload Production .htaccess
+
+Upload `backend/.htaccess.production` to `public_html/.htaccess`
+
+**This single .htaccess file does three things:**
+1. Routes `/api/...` requests to PHP handlers
+2. Serves frontend SPA (all non-API routes → `index.html`)
+3. Sets environment variables for database connection
+4. Protects backend files from direct access
+
+---
+
+## Step 5: Verify API Health
+
+Open in browser:
+```
+https://badminton-scorer.deunaybienbonito.com/api/health
+```
+
+Expected response:
+```json
+{"status":"ok","database":"connected"}
+```
+
+---
+
+## Step 6: Test Full Flow
+
+1. Open `https://badminton-scorer.deunaybienbonito.com`
+2. Click "NUEVO PARTIDO"
+3. Enter player names and create a match
+4. Verify the ShareURL page shows both URLs
+5. Test the controller (with `?token=`)
+6. Test the TV view at `/watch/:id`
+7. Play some points and verify sync
+
+---
+
+## 🗂️ Final Hosting Structure
+
+```
+/home/youruser/
+└── public_html/                          ← web root
+    ├── index.html                        ← React SPA entry
+    ├── assets/                           ← JS/CSS bundles
+    │
+    ├── handlers/                         ← PHP API handlers
+    │   ├── health.php
+    │   └── matches/
+    │       ├── create.php
+    │       ├── read.php
+    │       ├── score.php
+    │       └── end.php
+    ├── models/
+    │   └── MatchModel.php
+    ├── config/
+    │   └── database.php
+    ├── vendor/                           ← Composer deps
+    │
+    ├── composer.json
+    ├── composer.lock
+    └── .htaccess                         ← Router + CORS + Security
+```
 
 ---
 
 ## 🔒 Security Notes
 
-- `.env` file should be OUTSIDE `public_html/` or protected with `.htaccess`
-- The `.env` contains DB credentials - never commit it to git
-- Backend validates control_token for all score operations
-- TV viewers cannot guess controller URL (separate /watch/:id route)
+- **`.htaccess`** blocks access to `/config/`, `/models/`, `/vendor/`, `/tests/`
+- **`.env`** files are blocked from web access
+- **Control token**: Only the creator gets the `?token=` URL; TV viewers see `/watch/:id` (no token)
+- **Database credentials**: Stored in Apache environment variables (`SetEnv`), not in code
 
 ---
 
 ## 🛠️ Troubleshooting
 
-**CORS errors in browser:**
-- Check `.htaccess` CORS header matches your exact domain (with https://)
+### CORS errors in browser console
+- Verify `.htaccess` CORS headers are present
+- Check that `Access-Control-Allow-Origin` matches or uses `*`
 
-**Database connection failed:**
-- Verify .env credentials match cPanel database info
-- Try `localhost` or `127.0.0.1` for DB_HOST
+### "Database connection failed" error
+- Check cPanel database credentials match the `SetEnv` values in `.htaccess`
+- Try `localhost` or `127.0.0.1` for `DB_HOST`
 
-**404 on API routes:**
-- Verify backend files uploaded correctly
-- Check hosting supports `.htaccess` RewriteEngine
-- Ensure PHP version is 8.1 or higher
+### 404 on API routes (`/api/matches`)
+- Verify `.htaccess` uploaded correctly to `public_html/`
+- Check hosting supports `mod_rewrite` (most do, but verify)
+- Ensure `handlers/` folder exists with correct permissions (755)
 
-**Frontend shows blank page:**
-- Verify `index.html` is in `public_html/`
+### Blank page / broken frontend
+- Verify `index.html` and `assets/` are in `public_html/`
 - Check browser console for JS errors
-- Confirm API_BASE URL is correct in build
+- Confirm `VITE_API_URL` in `.env.production` points to your domain
+
+### "Unauthorized" or 401 errors when scoring
+- Check that the URL includes `?token=...` parameter
+- Verify the match was created successfully (check DB via phpMyAdmin)
 
 ---
 
-## 📁 Recommended Hosting Structure
+## 🔄 Updates After Deploy
 
+### Frontend update:
+```bash
+cd frontend/
+npm run build
+# Re-upload dist/ contents to public_html/
 ```
-/home/youruser/
-├── .env                          # Backend credentials (protected)
-├── badminton-api/               # Backend PHP files
-│   ├── index.php
-│   ├── .htaccess
-│   ├── config/
-│   ├── handlers/
-│   └── models/
-└── public_html/                 # Frontend (web root)
-    ├── index.html
-    ├── assets/
-    └── .htaccess
+
+### Backend update:
+```bash
+# Re-upload modified files (handlers/, models/, config/) to public_html/
 ```
+
+---
+
+**Questions?** Check the README.md and spec.md in the repository root.

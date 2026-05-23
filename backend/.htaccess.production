@@ -1,0 +1,73 @@
+# Production .htaccess for badminton-scorer.deunaybienbonito.com
+# Place this file in public_html/
+
+# ============================================
+# 1. BACKEND API ROUTES (must come FIRST)
+# ============================================
+RewriteEngine On
+
+# API endpoints -> PHP handlers
+RewriteRule ^api/health/?$ handlers/health.php [L,QSA]
+RewriteRule ^api/matches/?$ handlers/matches/create.php [L,QSA]
+RewriteRule ^api/matches/([a-zA-Z0-9]+)/?$ handlers/matches/read.php?id=$1 [L,QSA]
+RewriteRule ^api/matches/([a-zA-Z0-9]+)/score/?$ handlers/matches/score.php?id=$1 [L,QSA]
+RewriteRule ^api/matches/([a-zA-Z0-9]+)/end/?$ handlers/matches/end.php?id=$1 [L,QSA]
+
+# ============================================
+# 2. FRONTEND SPA FALLBACK
+# ============================================
+# If it's a real file or directory, serve it
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Everything else -> index.html (React Router)
+RewriteRule ^ index.html [L]
+
+# ============================================
+# 3. CORS HEADERS
+# ============================================
+Header always set Access-Control-Allow-Origin "*"
+Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+Header always set Access-Control-Allow-Headers "Content-Type"
+Header always set Access-Control-Allow-Credentials "true"
+
+# ============================================
+# 4. SECURITY - Protect backend files
+# ============================================
+# Deny access to sensitive directories and files
+<IfModule mod_authz_core.c>
+  # Apache 2.4+
+  <RequireAll>
+    Require all denied
+  </RequireAll>
+</IfModule>
+<IfModule !mod_authz_core.c>
+  # Apache 2.2
+  Order allow,deny
+  Deny from all
+</IfModule>
+
+# Protect .env file
+<FilesMatch "^\.env">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Protect composer files
+<FilesMatch "composer\.(json|lock)$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Protect backend directories via rewrite
+RewriteRule ^(config|models|vendor|tests)/ - [F,L]
+
+# ============================================
+# 5. ENVIRONMENT VARIABLES (SetEnv)
+# ============================================
+# These are read by backend/config/database.php
+SetEnv DB_HOST localhost
+SetEnv DB_NAME huitacad_badmintonscore
+SetEnv DB_USER huitacad_badmintonscore
+SetEnv DB_PASS D1L2CXMvJf.H

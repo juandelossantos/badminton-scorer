@@ -3,10 +3,11 @@ function getDB() {
     static $db = null;
     
     if ($db === null) {
-        $host = getenv('DB_HOST') ?: 'db';
-        $dbname = getenv('DB_NAME') ?: 'badminton_scorer';
-        $username = getenv('DB_USER') ?: 'root';
-        $password = getenv('DB_PASS') ?: 'rootpass';
+        // Try getenv first (Docker/local), fallback to $_SERVER (Apache SetEnv)
+        $host = getenv('DB_HOST') ?: ($_SERVER['DB_HOST'] ?? 'db');
+        $dbname = getenv('DB_NAME') ?: ($_SERVER['DB_NAME'] ?? 'badminton_scorer');
+        $username = getenv('DB_USER') ?: ($_SERVER['DB_USER'] ?? 'root');
+        $password = getenv('DB_PASS') ?: ($_SERVER['DB_PASS'] ?? 'rootpass');
         
         try {
             $db = new PDO(
