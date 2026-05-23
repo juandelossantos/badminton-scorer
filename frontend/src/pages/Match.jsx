@@ -179,17 +179,23 @@ function Match() {
         </div>
       </div>
 
-      {/* Share + End Match */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', padding: '8px 0', zIndex: 1 }}>
-        {shareVisible && (
+      {/* Share button only when score is 0-0 */}
+      {shareVisible && (
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', padding: '8px 0', zIndex: 1 }}>
           <button className="btn btn-primary" onClick={handleShare} style={{ width: 'auto', padding: '8px 16px', fontSize: '0.55rem' }}>
             Compartir URL TV
           </button>
-        )}
-        <button className="btn btn-end" onClick={handleEndMatch}>
-          Finalizar Partido
-        </button>
-      </div>
+        </div>
+      )}
+
+      {/* End Match button only when match is actually won per badminton rules */}
+      {(p1SetsWon >= match.sets_to_win || p2SetsWon >= match.sets_to_win) && (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0', zIndex: 1 }}>
+          <button className="btn btn-end" onClick={handleEndMatch}>
+            Finalizar Partido
+          </button>
+        </div>
+      )}
 
       {/* Footer Tabs */}
       <footer className="app-footer">

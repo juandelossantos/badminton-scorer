@@ -846,59 +846,46 @@ body {
 /* TV is always fullscreen — no max-width constraint */
 
 /* ===== Landscape Orientation ===== */
+/* DESIGN.md: Landscape = wider phone, same vertical stack layout as portrait but compact */
 @media (orientation: landscape) and (max-height: 500px) {
   .match-page {
-    flex-direction: row;
-    flex-wrap: wrap;
+    /* Keep vertical flex stack, just more compact */
+    padding: 0;
   }
 
-  .match-header,
+  .match-header {
+    padding: var(--space-sm) var(--space-lg);
+  }
+
   .sets-bar {
-    width: 100%;
+    padding: var(--space-xs) var(--space-lg);
   }
 
   .players-row {
-    width: 30%;
-    flex-direction: column;
-    justify-content: center;
-    padding: var(--space-md);
-  }
-
-  .player-info.p1,
-  .player-info.p2 {
-    align-items: center;
-  }
-
-  .vs-mini {
-    display: none;
+    padding: var(--space-md) var(--space-xl);
   }
 
   .scoreboard-area {
-    width: 40%;
+    min-height: 0;
+    flex: 1;
+  }
+
+  .scoreboard {
+    gap: var(--space-xxl);
   }
 
   .big-number {
-    font-size: clamp(3rem, 12vh, 5rem);
+    /* DESIGN.md: Display Landscape = 4rem */
+    font-size: 4rem;
+    letter-spacing: -3px;
   }
 
   .controls {
-    width: 30%;
-    flex-direction: column;
-    justify-content: center;
-    padding: var(--space-md);
-  }
-
-  .control-half {
-    flex-direction: row;
-    gap: var(--space-lg);
-  }
-
-  .control-row {
-    flex-direction: column;
+    padding: var(--space-sm) 0;
   }
 
   .app-footer {
-    width: 100%;
+    padding: var(--space-xs) var(--space-lg);
   }
 }
 
