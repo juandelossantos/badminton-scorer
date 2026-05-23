@@ -425,9 +425,10 @@ body {
 }
 
 .big-number {
-  font-size: clamp(5rem, 22vw, 8rem);
+  /* Portrait: scale with viewport HEIGHT since height is the constraint */
+  font-size: clamp(7rem, 22vh, 14rem);
   font-weight: 800;
-  line-height: 0.95;
+  line-height: 0.9;
   letter-spacing: -4px;
 }
 
@@ -786,10 +787,6 @@ body {
 
 /* ===== Responsive ===== */
 @media (max-width: 480px) {
-  .big-number {
-    font-size: 4.5rem;
-  }
-
   .scoreboard {
     gap: var(--space-lg);
   }
