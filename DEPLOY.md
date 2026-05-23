@@ -101,6 +101,8 @@ Upload `backend/.htaccess.production` to `public_html/.htaccess`
 3. Sets environment variables for database connection
 4. Protects backend files from direct access
 
+⚠️ **CRITICAL**: Do NOT add `<RequireAll><Require all denied></RequireAll>` anywhere in the `.htaccess` — that blocks ALL access and causes 403 errors. Only block specific directories with `RewriteRule ^(config|models|vendor|tests)/ - [F,L]`.
+
 ---
 
 ## Step 5: Verify API Health
@@ -168,31 +170,50 @@ Expected response:
 
 ## 🛠️ Troubleshooting
 
-### CORS errors in browser console
-- Verify `.htaccess` CORS headers are present
-- Check that `Access-Control-Allow-Origin` matches or uses `*`
+### 🔴 403 Forbidden on entire site
+**Cause:** `.htaccess` contains `<RequireAll><Require all denied></RequireAll>` or similar global deny blocks.
+**Fix:** Use ONLY `RewriteRule ^(config|models|vendor|tests)/ - [F,L]` to block specific directories. Remove any `Require all denied` or `<FilesMatch>` blocks that aren't for specific file types.
 
-### "Database connection failed" error
+### 🔴 "JSON.parse: unexpected character" when creating a match
+**Cause A:** PHP is outputting HTML error pages instead of JSON (hosting default).
+**Fix:** All handlers now include `error_reporting(0)` and `catch (Throwable)` to ensure JSON is always returned. Re-upload all `handlers/` files.
+
+**Cause B:** Frontend is calling the wrong URL (double `/api/`).
+**Fix:** Check `.env.production` — `VITE_API_URL` must NOT end with `/api`. It should be `https://badminton-scorer.deunaybienbonito.com` (the code adds `/api/matches/`). After changing `.env.production`, you MUST run `npm run build` again and re-upload `dist/`.
+
+### 🔴 "Database connection failed" error
 - Check cPanel database credentials match the `SetEnv` values in `.htaccess`
 - Try `localhost` or `127.0.0.1` for `DB_HOST`
+- Verify database exists in phpMyAdmin
 
-### 404 on API routes (`/api/matches`)
+### 🔴 404 on API routes (`/api/matches`)
 - Verify `.htaccess` uploaded correctly to `public_html/`
 - Check hosting supports `mod_rewrite` (most do, but verify)
 - Ensure `handlers/` folder exists with correct permissions (755)
 
-### Blank page / broken frontend
+### 🔴 Blank page / broken frontend
 - Verify `index.html` and `assets/` are in `public_html/`
 - Check browser console for JS errors
-- Confirm `VITE_API_URL` in `.env.production` points to your domain
+- Confirm `VITE_API_URL` in `.env.production` points to your domain WITHOUT `/api` at the end
 
-### "Unauthorized" or 401 errors when scoring
+### 🔴 "Unauthorized" or 401 errors when scoring
 - Check that the URL includes `?token=...` parameter
 - Verify the match was created successfully (check DB via phpMyAdmin)
 
 ---
 
 ## 🔄 Updates After Deploy
+
+### ⚠️ CRITICAL RULE: Always rebuild after changing `.env.production`
+
+If you change `frontend/.env.production`, you MUST:
+```bash
+cd frontend/
+npm run build
+# THEN re-upload dist/ contents to public_html/
+```
+
+The build process embeds the API URL into the JavaScript bundle. The old files in `dist/` will still have the old URL.
 
 ### Frontend update:
 ```bash
@@ -205,6 +226,19 @@ npm run build
 ```bash
 # Re-upload modified files (handlers/, models/, config/) to public_html/
 ```
+
+---
+
+## 🧪 Diagnostic Tool
+
+If something breaks, use `backend/diagnose.php`:
+1. Upload it to `public_html/`
+2. Visit `https://badminton-scorer.deunaybienbonito.com/diagnose.php`
+3. Check:
+   - `mod_rewrite`: must be `true`
+   - `files[".htaccess"]`: must have `exists: true`
+   - `api_routing_test`: must have `is_json: true` and HTTP 201
+4. **Delete `diagnose.php` after debugging** — it exposes system info.
 
 ---
 
