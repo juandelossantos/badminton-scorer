@@ -433,7 +433,7 @@ body {
 }
 
 .big-number {
-  font-size: 5.5rem;
+  font-size: clamp(3.5rem, 15vw, 7rem);
   font-weight: 800;
   line-height: 1;
   letter-spacing: -4px;
@@ -607,7 +607,7 @@ body {
 }
 
 .tv-number {
-  font-size: 7rem;
+  font-size: clamp(4rem, 18vw, 9rem);
   font-weight: 800;
   line-height: 1;
   letter-spacing: -4px;
@@ -803,6 +803,150 @@ body {
     max-width: 960px;
     margin: 0 auto;
   }
+}
+
+/* ===== Landscape Orientation ===== */
+@media (orientation: landscape) and (max-height: 500px) {
+  .match-page {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .match-header,
+  .sets-bar {
+    width: 100%;
+  }
+
+  .players-row {
+    width: 30%;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--space-md);
+  }
+
+  .player-info.p1,
+  .player-info.p2 {
+    align-items: center;
+  }
+
+  .vs-mini {
+    display: none;
+  }
+
+  .scoreboard-area {
+    width: 40%;
+  }
+
+  .big-number {
+    font-size: clamp(3rem, 12vh, 5rem);
+  }
+
+  .controls {
+    width: 30%;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--space-md);
+  }
+
+  .control-half {
+    flex-direction: row;
+    gap: var(--space-lg);
+  }
+
+  .control-row {
+    flex-direction: column;
+  }
+
+  .app-footer {
+    width: 100%;
+  }
+}
+
+/* ===== Share URL Page ===== */
+.share-page {
+  align-items: center;
+  padding: var(--space-xxl);
+}
+
+.share-main {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  margin-top: var(--space-xxl);
+}
+
+.share-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.share-label {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.share-url-box {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: stretch;
+}
+
+.share-url {
+  flex: 1;
+  font-family: var(--font);
+  font-size: 0.6rem;
+  padding: 10px 12px;
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-md);
+  word-break: break-all;
+  display: flex;
+  align-items: center;
+}
+
+.btn-copy {
+  font-family: var(--font);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 10px 16px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: all 150ms ease;
+  white-space: nowrap;
+}
+
+.btn-copy:hover {
+  background: var(--elevated);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+.qr-section {
+  align-items: center;
+}
+
+.qr-placeholder {
+  width: 150px;
+  height: 150px;
+  background: var(--surface);
+  border: 2px dashed var(--border-default);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 0.7rem;
 }
 
 /* ===== Reduced Motion ===== */

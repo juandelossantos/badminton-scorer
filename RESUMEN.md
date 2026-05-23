@@ -1,82 +1,95 @@
 # Resumen del Proyecto Badminton Scorer
 
 ## Último Estado
-**Fase Completada:** Frontend Core UI alineado con DESIGN.md (Tasks 8-11 de 22)
-**Commit Actual:** `5951871` en rama `main`
+**Fase Completada:** Frontend Core UI + ShareURL (Tasks 8-12 de 22)
+**Commit Actual:** `f564f31` en rama `main`
 
 ## Progreso
 - [x] Phase 1: Foundation (Docker, DB Schema, Health Check)
 - [x] Phase 2: Core API (CRUD + Scoring Logic, 17 tests pass)
 - [x] Phase 3: Frontend Foundation (Vite + React + Router + Theme)
-- [x] Phase 4 (parcial): Core UI básico alineado con DESIGN.md
+- [x] Phase 4 (parcial): Core UI alineado con DESIGN.md
   - [x] Grid sutil de fondo (1px cada 40px)
-  - [x] Cancha SVG como background (12% dark / 8% light)
+  - [x] Cancha SVG responsive (horizontal landscape, vertical portrait)
   - [x] Match Controller: header, sets bar, players row, scoreboard, controls, footer tabs
   - [x] Match TV: sin controles, glow intenso, badge set verde
   - [x] Create Match: form con focus verde + glow
-  - [x] Iconos SVG (sol/luna) — sin emojis
-- [ ] Phase 4 (resto): Sonidos 8-bit, undo visual, responsive landscape, celebration canvas
-- [ ] Phase 5: Integration (Polling, Compartir, QR)
-- [ ] Phase 6: Polish (Cleanup, prefers-reduced-motion)
+  - [x] Share URL: post-creation page con URLs + QR + Start button
+  - [x] Landscape layout: side-by-side para móvil horizontal
+  - [x] Marcadores responsive con clamp()
+- [ ] Phase 4 (resto): Sonidos 8-bit, celebration canvas, QR real, undo visual
+- [ ] Phase 5: Integration (Polling optimizado, cleanup antiguos)
+- [ ] Phase 6: Polish (prefers-reduced-motion, error boundaries)
 - [ ] Phase 7: Ship (Build + Deploy)
 
-## Pruebas con Playwright Realizadas ✅
+## Endpoints API Completados y Verificados
+| Método | Endpoint | Tests | Estado |
+|---|---|---|---|
+| GET | `/api/health` | — | ✅ Funcionando |
+| POST | `/api/matches` | 5/5 pass | ✅ Funcionando |
+| GET | `/api/matches/:id` | 2/2 pass | ✅ Funcionando |
+| PUT | `/api/matches/:id/score` | 10/10 pass | ✅ Funcionando |
+| PUT | `/api/matches/:id/end` | Manual OK | ✅ Funcionando |
 
-### Home Page
-- ✅ Carga con grid sutil y tema oscuro
-- ✅ Tipografía JetBrains Mono correcta
-- ✅ Botón "NUEVO PARTIDO" funcional
+## Pruebas E2E con Playwright (3 vistas obligatorias)
 
-### Create Match Form
-- ✅ Navegación desde Home
-- ✅ Toggle Individual/Dobles
-- ✅ Inputs con focus verde + glow sutil
-- ✅ Botón CREAR PARTIDO full-width verde
-- ✅ POST a backend exitoso
+### Desktop (1280×720)
+- ✅ Home: grid sutil, botón NUEVO PARTIDO
+- ✅ Create Match: form completo, toggle Individual/Dobles
+- ✅ Share URL: URLs visibles, botón Copiar, QR placeholder, INICIAR PARTIDO
+- ✅ Match Controller: layout vertical, cancha horizontal, marcadores grandes
+- ✅ Match TV: solo dark, glow intenso, badge set verde
 
-### Match Controller (tema oscuro)
-- ✅ Grid sutil visible en #0c0c0c
-- ✅ Header: EN VIVO (izq, dot pulsante) + INDIVIDUAL (der)
-- ✅ Sets bar: "SETS" label, score "0—0", badge "Set 1/5"
-- ✅ Players row: Juan (izq) vs Pedro (der), VS centrado
-- ✅ Status servidor: "SERVICIO → IZQUIERDA" / "RECIBE"
-- ✅ Cancha SVG como background sutil
-- ✅ Marcador: 0 verde (glow) vs 0 ámbar (glow)
-- ✅ Dot rojo (5px) indicando servidor
-- ✅ Labels "PTS" debajo de cada número
-- ✅ Botones +: verde #059669 y ámbar #d97706, 44×36px exactos
-- ✅ Botones −: fondo elevated #1e293b, borde sutil
-- ✅ Botón "COMPARTIR URL TV" visible en 0-0
-- ✅ Botón "FINALIZAR PARTIDO" sutil, rojo en hover
-- ✅ Footer tabs: MARCADOR (verde, activo) | DETALLES | icono sol SVG
-- ✅ Toggle tema: oscuro ↔ claro
+### Mobile Portrait (375×812)
+- ✅ Home: layout adaptado
+- ✅ Create Match: form scrollable, inputs con focus verde
+- ✅ Share URL: URLs con wrap, QR centrado
+- ✅ Match Controller: layout vertical, cancha vertical, controles abajo
+- ✅ Match TV: marcadores grandes, sin controles
 
-### Match Controller (tema claro)
-- ✅ Fondo blanco #ffffff con grid sutil gris
-- ✅ Sin glow en números (solo dark tiene glow)
-- ✅ Colores de acento mantenidos
-- ✅ Cancha SVG con 8% opacity
+### Mobile Landscape (812×375)
+- ✅ Match Controller: layout horizontal!
+  - Jugadores a la izquierda
+  - Marcador al centro
+  - Controles a la derecha
+  - Cancha horizontal
+- ✅ Marcadores responsive con clamp()
+- ✅ Footer tabs visibles
 
-### Match TV (solo dark)
-- ✅ Fondo #0c0c0c con grid
-- ✅ Header: EN VIVO + badge verde semi-transparente "Set 1/5"
-- ✅ Marcadores grandes (7rem) con glow intenso (0.4)
-- ✅ Nombres debajo del marcador
-- ✅ Footer: modo + puntos al 21 | servidor + lado
-- ✅ Sin controles
-- ✅ Cancha SVG background
-
-### Responsive
-- ✅ Desktop (1280×720): layout completo
-- ✅ Móvil (375×812): layout adaptado
-
-### Funcionalidad API
-- ✅ POST crear partido
+### Funcionalidad verificada en todas las vistas
+- ✅ POST crear partido → redirección a /share
 - ✅ PUT score +1 punto
 - ✅ PUT undo −1 punto
 - ✅ GET leer partido
 - ✅ Polling cada 3s
-- ✅ Auto-redirect a celebration al terminar
+- ✅ Botón Compartir visible solo en 0-0
+- ✅ Toggle tema oscuro/claro
+
+## Cambios Recientes
+
+### Cancha Responsive
+- Portrait: SVG vertical (220×400 viewBox)
+- Landscape/Desktop: SVG horizontal (400×220 viewBox)
+- Detección via `window.innerWidth > window.innerHeight` + resize/orientationchange listeners
+
+### Marcadores Responsive
+- `font-size: clamp(3.5rem, 15vw, 7rem)` para controller
+- `font-size: clamp(4rem, 18vw, 9rem)` para TV
+- Se ajustan automáticamente al ancho del viewport
+
+### Landscape Layout
+- CSS `@media (orientation: landscape) and (max-height: 500px)`
+- Players row → 30% width, vertical
+- Scoreboard → 40% width, centrado
+- Controls → 30% width, columna
+- VS mini oculto
+
+### Share URL Page
+- Muestra URL del controlador + botón Copiar
+- Muestra URL TV + botón Copiar
+- QR placeholder (150×150px dashed border)
+- Botón "INICIAR PARTIDO" verde full-width
+- Navega a /match/:id al iniciar
 
 ## Estructura de Archivos
 ```
@@ -85,16 +98,17 @@ frontend/
 │   ├── api/matches.js           # Cliente HTTP
 │   ├── components/
 │   │   └── common/
-│   │       ├── CanchaBG.jsx     # SVG cancha background
+│   │       ├── CanchaBG.jsx     # SVG cancha responsive (H/V)
 │   │       └── Icons.jsx        # SunIcon, MoonIcon SVG
 │   ├── context/ThemeContext.jsx  # Dark/Light toggle
 │   ├── pages/
 │   │   ├── Home.jsx              # Pantalla de inicio
-│   │   ├── CreateMatch.jsx       # Formulario
-│   │   ├── Match.jsx             # Controlador (DESIGN.md compliant)
-│   │   ├── MatchTV.jsx           # Vista TV (DESIGN.md compliant)
+│   │   ├── CreateMatch.jsx       # Formulario → /share
+│   │   ├── ShareURL.jsx          # Post-creation URLs + QR + Start
+│   │   ├── Match.jsx             # Controller (responsive)
+│   │   ├── MatchTV.jsx           # TV view (solo dark)
 │   │   └── Celebration.jsx       # Fin de partido
-│   └── styles/global.css         # Design system completo
+│   └── styles/global.css         # Design system + landscape MQ
 backend/
 ├── handlers/
 │   ├── health.php                # GET /api/health
@@ -120,7 +134,7 @@ backend/
 ## Qué falta para MVP
 1. Sonidos 8-bit (Web Audio API) — click, set, celebración
 2. Animación celebration (canvas fireworks)
-3. QR code para compartir
-4. Landscape responsive layout
+3. QR code real (qrcode.js)
+4. Responsive: ajustes finos de tamaño de texto
 5. Delete/cleanup de partidos antiguos (cron)
 6. Build de producción y deploy

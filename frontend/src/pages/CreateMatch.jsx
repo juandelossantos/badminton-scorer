@@ -47,7 +47,7 @@ function CreateMatch() {
         sets_to_win: parseInt(setsToWin),
         points_per_set: parseInt(pointsPerSet),
       })
-      navigate(`/match/${match.id}`)
+      navigate('/share', { state: { match } })
     } catch (err) {
       setError(err.message)
     } finally {
