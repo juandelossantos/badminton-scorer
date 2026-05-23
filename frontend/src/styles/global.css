@@ -551,6 +551,9 @@ body {
 .tv-page {
   background: #0c0c0c;
   color: #e2e8f0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100vw;
 }
 
 .tv-page .page {
@@ -559,33 +562,61 @@ body {
     linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px),
     #0c0c0c;
   background-size: 40px 40px, 40px 40px, 100% 100%;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+/* Cancha fills viewport on TV */
+.tv-page .cancha-bg {
+  width: 95vw;
+  height: 95vh;
+  max-width: none;
+}
+
+.tv-page .cancha-bg svg {
+  width: 100%;
+  height: 100%;
+}
+
+.cancha-bg-tv {
+  width: 95vw;
+  height: 95vh;
+  max-width: none;
+}
+
+.cancha-bg-tv svg {
+  width: 100%;
+  height: 100%;
 }
 
 .tv-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-lg) var(--space-tv);
+  padding: 2vh 4vw;
   border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
 }
 
 .tv-live {
-  font-size: 0.8rem;
+  font-size: clamp(1.2rem, 3vw, 3rem);
   font-weight: 700;
-  letter-spacing: 3px;
+  letter-spacing: 4px;
   color: var(--accent-live);
 }
 
 .tv-sets {
   display: flex;
-  gap: var(--space-sm);
+  gap: clamp(8px, 1.5vw, 24px);
+  align-items: center;
 }
 
 .tv-set-score {
-  font-size: 0.65rem;
+  font-size: clamp(0.9rem, 2vw, 2.5rem);
   font-weight: 700;
   color: var(--text-secondary);
-  padding: var(--space-xs) var(--space-sm);
+  padding: clamp(4px, 0.8vw, 12px) clamp(8px, 1.5vw, 20px);
   background: rgba(255,255,255,0.04);
   border-radius: var(--r-sm);
 }
@@ -596,80 +627,66 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
+  min-height: 0;
 }
 
 .tv-scoreboard {
   display: flex;
   align-items: center;
-  gap: var(--space-tv);
+  justify-content: center;
+  gap: clamp(24px, 8vw, 120px);
   position: relative;
   z-index: 1;
+  width: 100%;
+  padding: 0 4vw;
 }
 
+/* Enormous numbers for 20m visibility */
 .tv-number {
-  font-size: clamp(5rem, 22vw, 12rem);
+  font-size: clamp(6rem, 28vw, 28rem);
   font-weight: 800;
-  line-height: 1;
-  letter-spacing: -6px;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
 }
 
 .tv-number-p1 {
   color: var(--accent-p1);
-  text-shadow: 0 0 80px var(--glow-p1-tv), 0 0 120px var(--glow-p1-tv);
+  text-shadow: 0 0 80px var(--glow-p1-tv), 0 0 150px var(--glow-p1-tv), 0 0 200px var(--glow-p1-tv);
 }
 
 .tv-number-p2 {
   color: var(--accent-p2);
-  text-shadow: 0 0 80px var(--glow-p2-tv), 0 0 120px var(--glow-p2-tv);
+  text-shadow: 0 0 80px var(--glow-p2-tv), 0 0 150px var(--glow-p2-tv), 0 0 200px var(--glow-p2-tv);
 }
 
 .tv-player-names {
-  font-size: clamp(1rem, 3vw, 1.5rem);
+  font-size: clamp(1rem, 4vw, 4rem);
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   color: var(--text-primary);
   text-align: center;
+  margin-top: 2vh;
 }
 
 .tv-footer {
   display: flex;
   justify-content: space-between;
-  padding: var(--space-lg) var(--space-tv);
+  padding: 2vh 4vw;
   border-top: 1px solid var(--border-subtle);
-  font-size: clamp(0.7rem, 1.5vw, 1rem);
+  font-size: clamp(0.8rem, 2vw, 2rem);
   color: var(--text-muted);
-  letter-spacing: 2px;
-}
-
-.tv-live {
-  font-size: clamp(1rem, 2.5vw, 1.5rem);
-  font-weight: 700;
-  letter-spacing: 4px;
-  color: var(--accent-live);
-}
-
-.tv-sets {
-  display: flex;
-  gap: var(--space-lg);
-}
-
-.tv-set-score {
-  font-size: clamp(0.8rem, 1.5vw, 1.1rem);
-  font-weight: 700;
-  color: var(--text-secondary);
-  padding: var(--space-xs) var(--space-md);
-  background: rgba(255,255,255,0.04);
-  border-radius: var(--r-sm);
+  letter-spacing: 3px;
+  flex-shrink: 0;
 }
 
 .tv-current-set {
-  font-size: clamp(0.8rem, 1.5vw, 1.1rem);
+  font-size: clamp(0.9rem, 2vw, 2.5rem);
   font-weight: 700;
   letter-spacing: 2px;
   color: var(--tv-set-text);
   background: var(--tv-set-bg);
   border: 1px solid var(--tv-set-border);
-  padding: 4px 14px;
+  padding: clamp(4px, 0.8vw, 12px) clamp(10px, 2vw, 24px);
   border-radius: var(--r-sm);
 }
 
@@ -805,10 +822,6 @@ body {
     font-size: 4.5rem;
   }
 
-  .tv-number {
-    font-size: 5rem;
-  }
-
   .scoreboard {
     gap: var(--space-lg);
   }
@@ -830,12 +843,7 @@ body {
   }
 }
 
-@media (min-width: 1024px) {
-  .tv-page .page {
-    max-width: 960px;
-    margin: 0 auto;
-  }
-}
+/* TV is always fullscreen — no max-width constraint */
 
 /* ===== Landscape Orientation ===== */
 @media (orientation: landscape) and (max-height: 500px) {

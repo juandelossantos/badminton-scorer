@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-function CanchaBG() {
+function CanchaBG({ variant = 'default' }) {
   const [isLandscape, setIsLandscape] = useState(false)
 
   useEffect(() => {
@@ -18,11 +18,17 @@ function CanchaBG() {
     }
   }, [])
 
+  const isTv = variant === 'tv'
+
   return (
-    <div className="cancha-bg" aria-hidden="true">
-      {isLandscape ? (
-        // Horizontal cancha for landscape/desktop
-        <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+    <div className={`cancha-bg ${isTv ? 'cancha-bg-tv' : ''}`} aria-hidden="true">
+      {isLandscape || isTv ? (
+        // Horizontal cancha for landscape/desktop/TV
+        <svg
+          viewBox="0 0 400 220"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="xMidYMid meet"
+        >
           {/* Outer boundary */}
           <rect x="10" y="10" width="380" height="200" />
           {/* Short service lines */}
@@ -40,7 +46,11 @@ function CanchaBG() {
         </svg>
       ) : (
         // Vertical cancha for portrait
-        <svg viewBox="0 0 220 400" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          viewBox="0 0 220 400"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="xMidYMid meet"
+        >
           {/* Outer boundary */}
           <rect x="10" y="10" width="200" height="380" />
           {/* Singles sidelines */}

@@ -57,7 +57,7 @@ function MatchTV() {
 
       {/* Main Scoreboard */}
       <main className="tv-main">
-        <CanchaBG />
+        <CanchaBG variant="tv" />
         <div className="tv-scoreboard">
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
             <div className="tv-number tv-number-p1">{match.current_score.p1}</div>
