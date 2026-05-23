@@ -97,26 +97,18 @@ body {
   min-height: 100vh;
 }
 
-/* ===== Subtle Grid Background ===== */
+/* ===== Page Background ===== */
 .page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background:
-    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px),
-    var(--bg);
-  background-size: 40px 40px, 40px 40px, 100% 100%;
+  background: var(--bg);
   color: var(--text-primary);
   position: relative;
 }
 
 [data-theme="light"] .page {
-  background:
-    linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px),
-    var(--bg);
-  background-size: 40px 40px, 40px 40px, 100% 100%;
+  background: var(--bg);
 }
 
 /* ===== Cancha SVG Background ===== */
@@ -133,7 +125,7 @@ body {
 }
 
 [data-theme="light"] .cancha-bg {
-  opacity: 0.08;
+  opacity: 0.18;
 }
 
 .cancha-bg svg {
@@ -145,7 +137,7 @@ body {
 }
 
 [data-theme="light"] .cancha-bg svg {
-  stroke: #9ca3af;
+  stroke: #4b5563;
 }
 
 /* ===== Loading / Error ===== */
@@ -449,27 +441,6 @@ body {
   text-shadow: 0 0 40px var(--glow-p2);
 }
 
-/* Server dot (red 10px with blink animation — same as live dot so it's obviously an active indicator) */
-.server-dot {
-  position: absolute;
-  top: -12px;
-  right: -16px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--accent-danger);
-  box-shadow: 0 0 10px var(--accent-danger);
-  animation: blink 1.5s infinite;
-}
-
-.points-label {
-  font-size: 0.5rem;
-  font-weight: 600;
-  letter-spacing: 2px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-}
-
 /* No glow in light theme */
 [data-theme="light"] .number-p1,
 [data-theme="light"] .number-p2 {
@@ -487,13 +458,8 @@ body {
 
 .control-half {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: var(--space-sm);
-}
-
-.control-row {
-  display: flex;
   gap: var(--space-sm);
 }
 
@@ -891,10 +857,6 @@ body {
     line-height: 0.85;
   }
 
-  .match-page .points-label {
-    display: none; /* Hide "PTS" label in landscape to save vertical space */
-  }
-
   .match-page .vs-mini {
     display: none;
   }
@@ -902,6 +864,7 @@ body {
   .controls {
     padding: var(--space-xs) 0;
     min-height: 0;
+    gap: var(--space-xl);
   }
 
   .btn-score {

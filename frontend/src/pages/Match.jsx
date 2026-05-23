@@ -151,39 +151,33 @@ function Match() {
           <div className="score-col">
             <div className="big-number number-p1">
               {match.current_score.p1}
-              {p1IsServer && <span className="server-dot" title="Saque" />}
             </div>
-            <div className="points-label">PTS</div>
           </div>
           <div className="score-col">
             <div className="big-number number-p2">
               {match.current_score.p2}
-              {!p1IsServer && <span className="server-dot" title="Saque" />}
             </div>
-            <div className="points-label">PTS</div>
           </div>
         </div>
       </div>
 
-      {/* Controls */}
+      {/* Controls: + and - per player in same row */}
       <div className="controls">
         <div className="control-half">
-          <div className="control-row">
-            <button className="btn btn-score btn-score-p1" onClick={() => handleScore(1)}>+</button>
-            <button className="btn btn-score btn-score-p2" onClick={() => handleScore(2)}>+</button>
-          </div>
-          <div className="control-row">
-            <button className="btn btn-minus" onClick={() => handleUndo(1)} disabled={match.current_score.p1 === 0}>−</button>
-            <button className="btn btn-minus" onClick={() => handleUndo(2)} disabled={match.current_score.p2 === 0}>−</button>
-          </div>
+          <button className="btn btn-score btn-score-p1" onClick={() => handleScore(1)}>+</button>
+          <button className="btn btn-minus" onClick={() => handleUndo(1)} disabled={match.current_score.p1 === 0}>−</button>
+        </div>
+        <div className="control-half">
+          <button className="btn btn-score btn-score-p2" onClick={() => handleScore(2)}>+</button>
+          <button className="btn btn-minus" onClick={() => handleUndo(2)} disabled={match.current_score.p2 === 0}>−</button>
         </div>
       </div>
 
       {/* Share button only when score is 0-0 */}
       {shareVisible && (
         <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', padding: '8px 0', zIndex: 1 }}>
-          <button className="btn btn-primary" onClick={handleShare} style={{ width: 'auto', padding: '8px 16px', fontSize: '0.55rem' }}>
-            Compartir URL TV
+          <button className="btn btn-primary" onClick={handleShare} style={{ width: 'auto', padding: '10px 20px', fontSize: '1.2em' }}>
+            Compartir URL
           </button>
         </div>
       )}
