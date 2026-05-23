@@ -54,14 +54,6 @@ function ShareURL() {
           </div>
         </div>
 
-        {/* QR Placeholder */}
-        <div className="share-section qr-section">
-          <label className="share-label">Código QR</label>
-          <div className="qr-placeholder">
-            <span>QR Code</span>
-          </div>
-        </div>
-
         {/* Start Button */}
         <button className="btn btn-primary" onClick={handleStart}>
           INICIAR PARTIDO

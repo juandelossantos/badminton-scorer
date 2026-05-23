@@ -607,26 +607,26 @@ body {
 }
 
 .tv-number {
-  font-size: clamp(4rem, 18vw, 9rem);
+  font-size: clamp(5rem, 22vw, 12rem);
   font-weight: 800;
   line-height: 1;
-  letter-spacing: -4px;
+  letter-spacing: -6px;
 }
 
 .tv-number-p1 {
   color: var(--accent-p1);
-  text-shadow: 0 0 50px var(--glow-p1-tv);
+  text-shadow: 0 0 80px var(--glow-p1-tv), 0 0 120px var(--glow-p1-tv);
 }
 
 .tv-number-p2 {
   color: var(--accent-p2);
-  text-shadow: 0 0 50px var(--glow-p2-tv);
+  text-shadow: 0 0 80px var(--glow-p2-tv), 0 0 120px var(--glow-p2-tv);
 }
 
 .tv-player-names {
-  font-size: 0.8rem;
+  font-size: clamp(1rem, 3vw, 1.5rem);
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   color: var(--text-primary);
   text-align: center;
 }
@@ -634,11 +634,43 @@ body {
 .tv-footer {
   display: flex;
   justify-content: space-between;
-  padding: var(--space-md) var(--space-tv);
+  padding: var(--space-lg) var(--space-tv);
   border-top: 1px solid var(--border-subtle);
-  font-size: 0.55rem;
+  font-size: clamp(0.7rem, 1.5vw, 1rem);
   color: var(--text-muted);
-  letter-spacing: 1px;
+  letter-spacing: 2px;
+}
+
+.tv-live {
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--accent-live);
+}
+
+.tv-sets {
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.tv-set-score {
+  font-size: clamp(0.8rem, 1.5vw, 1.1rem);
+  font-weight: 700;
+  color: var(--text-secondary);
+  padding: var(--space-xs) var(--space-md);
+  background: rgba(255,255,255,0.04);
+  border-radius: var(--r-sm);
+}
+
+.tv-current-set {
+  font-size: clamp(0.8rem, 1.5vw, 1.1rem);
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--tv-set-text);
+  background: var(--tv-set-bg);
+  border: 1px solid var(--tv-set-border);
+  padding: 4px 14px;
+  border-radius: var(--r-sm);
 }
 
 /* ===== Home Page ===== */
