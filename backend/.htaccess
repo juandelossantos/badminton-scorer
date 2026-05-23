@@ -4,6 +4,7 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
 # API Routes - handlers are in /handlers/ to avoid conflict with /api/ directory
+RewriteRule ^api/health/?$ /handlers/health.php [L,QSA]
 RewriteRule ^api/matches/?$ /handlers/matches/create.php [L,QSA]
 RewriteRule ^api/matches/([a-zA-Z0-9]+)/?$ /handlers/matches/read.php?id=$1 [L,QSA]
 RewriteRule ^api/matches/([a-zA-Z0-9]+)/score/?$ /handlers/matches/score.php?id=$1 [L,QSA]

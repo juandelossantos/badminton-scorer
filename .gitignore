@@ -38,3 +38,4 @@ preview_*.png
 preview_*.html
 .playwright-mcp/
 state/
+*.png
