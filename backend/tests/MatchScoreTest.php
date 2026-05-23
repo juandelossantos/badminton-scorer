@@ -180,4 +180,27 @@ class MatchScoreTest extends TestCase
         // Try to update score on completed match
         $this->matchModel->updateScore($match['id'], 1);
     }
+
+    public function testServiceSideResetsToRightOnNewSet(): void
+    {
+        $match = $this->matchModel->create([
+            'mode' => 'singles',
+            'player1' => ['Juan'],
+            'player2' => ['Pedro'],
+            'sets_to_win' => 3,
+            'points_per_set' => 5
+        ]);
+
+        // Win first set (server will end on some side)
+        for ($i = 0; $i < 5; $i++) {
+            $this->matchModel->updateScore($match['id'], 1);
+        }
+        
+        $updated = $this->matchModel->getById($match['id']);
+        
+        // After winning set, new set should start with service_side = 'right'
+        $this->assertEquals(2, $updated['current_set']);
+        $this->assertEquals('right', $updated['service_side']);
+        $this->assertEquals(['p1' => 0, 'p2' => 0], $updated['current_score']);
+    }
 }

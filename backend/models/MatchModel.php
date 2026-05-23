@@ -11,7 +11,22 @@ class MatchModel
     
     public function generateId()
     {
-        return strtoupper(substr(str_shuffle('0123456789abcdefghijklmnopqrstuvwxyz'), 0, 8));
+        $maxAttempts = 10;
+        $attempts = 0;
+        
+        do {
+            $id = strtoupper(substr(str_shuffle('0123456789abcdefghijklmnopqrstuvwxyz'), 0, 8));
+            $stmt = $this->db->prepare("SELECT 1 FROM matches WHERE id = :id");
+            $stmt->execute([':id' => $id]);
+            $exists = $stmt->fetch();
+            $attempts++;
+        } while ($exists && $attempts < $maxAttempts);
+        
+        if ($exists) {
+            throw new Exception('Failed to generate unique match ID after ' . $maxAttempts . ' attempts');
+        }
+        
+        return $id;
     }
     
     public function create($data)
@@ -206,7 +221,7 @@ class MatchModel
             UPDATE matches 
             SET sets_data = :sets, current_set = :current_set,
                 current_p1 = 0, current_p2 = 0, server = :server,
-                updated_at = NOW()
+                service_side = 'right', updated_at = NOW()
             WHERE id = :id
         ");
         
