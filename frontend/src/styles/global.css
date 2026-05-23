@@ -449,15 +449,17 @@ body {
   text-shadow: 0 0 40px var(--glow-p2);
 }
 
-/* Server dot (red 5px) */
+/* Server dot (red 10px with blink animation — same as live dot so it's obviously an active indicator) */
 .server-dot {
   position: absolute;
-  top: -8px;
-  right: -12px;
-  width: 5px;
-  height: 5px;
+  top: -12px;
+  right: -16px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--accent-danger);
+  box-shadow: 0 0 10px var(--accent-danger);
+  animation: blink 1.5s infinite;
 }
 
 .points-label {
@@ -847,22 +849,30 @@ body {
 
 /* ===== Landscape Orientation ===== */
 /* DESIGN.md: Landscape = wider phone, same vertical stack layout as portrait but compact */
-@media (orientation: landscape) and (max-height: 500px) {
+/* Use min-aspect-ratio for robust detection across browsers */
+@media (min-aspect-ratio: 1.5/1) and (max-height: 600px) {
   .match-page {
     /* Keep vertical flex stack, just more compact */
     padding: 0;
   }
 
   .match-header {
-    padding: var(--space-sm) var(--space-lg);
+    padding: var(--space-xs) var(--space-lg);
+    min-height: 0;
   }
 
   .sets-bar {
     padding: var(--space-xs) var(--space-lg);
+    min-height: 0;
   }
 
   .players-row {
-    padding: var(--space-md) var(--space-xl);
+    padding: var(--space-xs) var(--space-xl);
+    min-height: 0;
+  }
+
+  .player-status {
+    font-size: 0.45rem;
   }
 
   .scoreboard-area {
@@ -874,18 +884,39 @@ body {
     gap: var(--space-xxl);
   }
 
-  .big-number {
-    /* DESIGN.md: Display Landscape = 4rem */
-    font-size: 4rem;
-    letter-spacing: -3px;
+  .match-page .big-number {
+    /* Much larger for real court visibility — 38vh of a 375px-tall phone = ~142px */
+    font-size: clamp(5.5rem, 38vh, 10rem);
+    letter-spacing: -4px;
+    line-height: 0.85;
+  }
+
+  .match-page .points-label {
+    display: none; /* Hide "PTS" label in landscape to save vertical space */
+  }
+
+  .match-page .vs-mini {
+    display: none;
   }
 
   .controls {
-    padding: var(--space-sm) 0;
+    padding: var(--space-xs) 0;
+    min-height: 0;
+  }
+
+  .btn-score {
+    width: 40px;
+    height: 32px;
+  }
+
+  .btn-minus {
+    width: 40px;
+    height: 32px;
   }
 
   .app-footer {
     padding: var(--space-xs) var(--space-lg);
+    min-height: 0;
   }
 }
 

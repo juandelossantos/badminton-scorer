@@ -151,14 +151,14 @@ function Match() {
           <div className="score-col">
             <div className="big-number number-p1">
               {match.current_score.p1}
-              {p1IsServer && <span className="server-dot" />}
+              {p1IsServer && <span className="server-dot" title="Saque" />}
             </div>
             <div className="points-label">PTS</div>
           </div>
           <div className="score-col">
             <div className="big-number number-p2">
               {match.current_score.p2}
-              {!p1IsServer && <span className="server-dot" />}
+              {!p1IsServer && <span className="server-dot" title="Saque" />}
             </div>
             <div className="points-label">PTS</div>
           </div>
