@@ -41,71 +41,18 @@ foreach ($required_files as $name => $path) {
     ];
 }
 
-// Read .htaccess content (first 20 lines)
-$htaccess_path = __DIR__ . '/.htaccess';
-if (file_exists($htaccess_path)) {
-    $htaccess_lines = file($htaccess_path);
-    $diagnostics['htaccess_first_20_lines'] = array_slice($htaccess_lines, 0, 20);
-} else {
-    $diagnostics['htaccess'] = 'NOT FOUND - This is the problem!';
-}
-
-// Check database connection
+// Test direct PHP file access with CORRECT field names
 try {
-    require_once __DIR__ . '/config/database.php';
-    $db = getDB();
-    $db->query('SELECT 1');
-    $diagnostics['database'] = [
-        'connected' => true,
-        'host' => getenv('DB_HOST') ?: $_SERVER['DB_HOST'] ?? 'not set',
-        'name' => getenv('DB_NAME') ?: $_SERVER['DB_NAME'] ?? 'not set',
-    ];
-} catch (Exception $e) {
-    $diagnostics['database'] = [
-        'connected' => false,
-        'error' => $e->getMessage(),
-    ];
-} catch (Throwable $t) {
-    $diagnostics['database'] = [
-        'connected' => false,
-        'error' => 'Fatal: ' . $t->getMessage(),
-    ];
-}
-
-// Check environment variables
-$diagnostics['environment'] = [
-    'DB_HOST_set' => !empty(getenv('DB_HOST') ?: $_SERVER['DB_HOST'] ?? ''),
-    'DB_NAME_set' => !empty(getenv('DB_NAME') ?: $_SERVER['DB_NAME'] ?? ''),
-    'DB_USER_set' => !empty(getenv('DB_USER') ?: $_SERVER['DB_USER'] ?? ''),
-    'DB_PASS_set' => !empty(getenv('DB_PASS') ?: $_SERVER['DB_PASS'] ?? ''),
-];
-
-// Try to load MatchModel
-try {
-    require_once __DIR__ . '/models/MatchModel.php';
-    $diagnostics['match_model'] = [
-        'loaded' => true,
-        'methods' => get_class_methods('MatchModel'),
-    ];
-} catch (Throwable $t) {
-    $diagnostics['match_model'] = [
-        'loaded' => false,
-        'error' => $t->getMessage(),
-    ];
-}
-
-// Test direct call to create.php
-try {
-    // Simulate what the .htaccess should do
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, 'https://' . $_SERVER['HTTP_HOST'] . '/handlers/matches/create.php');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
-        'player1' => 'Test',
-        'player2' => 'Debug',
-        'type' => 'singles'
-    ]));
+    $testBody = json_encode([
+        'mode' => 'singles',
+        'player1' => ['Test'],
+        'player2' => ['Debug']
+    ]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $testBody);
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
     $direct_response = curl_exec($ch);
@@ -115,8 +62,9 @@ try {
     $diagnostics['direct_php_test'] = [
         'url' => '/handlers/matches/create.php',
         'http_code' => $direct_http_code,
-        'response_preview' => substr($direct_response, 0, 200),
+        'response_preview' => substr($direct_response, 0, 300),
         'is_json' => json_decode($direct_response) !== null,
+        'sent_body' => $testBody,
     ];
 } catch (Throwable $t) {
     $diagnostics['direct_php_test'] = [
@@ -125,17 +73,18 @@ try {
     ];
 }
 
-// Test via /api/matches/ (what the frontend uses)
+// Test via /api/matches/ with CORRECT field names
 try {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, 'https://' . $_SERVER['HTTP_HOST'] . '/api/matches/');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
-        'player1' => 'Test',
-        'player2' => 'Debug',
-        'type' => 'singles'
-    ]));
+    $testBody = json_encode([
+        'mode' => 'singles',
+        'player1' => ['Test'],
+        'player2' => ['Debug']
+    ]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $testBody);
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
     $api_response = curl_exec($ch);
@@ -145,14 +94,29 @@ try {
     $diagnostics['api_routing_test'] = [
         'url' => '/api/matches/',
         'http_code' => $api_http_code,
-        'response_preview' => substr($api_response, 0, 200),
+        'response_preview' => substr($api_response, 0, 300),
         'is_json' => json_decode($api_response) !== null,
-        'note' => json_decode($api_response) === null ? 'HTML returned instead of JSON - .htaccess rewrite not working!' : 'OK',
+        'sent_body' => $testBody,
     ];
 } catch (Throwable $t) {
     $diagnostics['api_routing_test'] = [
         'error' => $t->getMessage(),
         'note' => 'curl might not be available',
+    ];
+}
+
+// Check what php://input gives us
+try {
+    $inputData = file_get_contents('php://input');
+    $diagnostics['php_input_test'] = [
+        'raw_input_length' => strlen($inputData),
+        'raw_input_preview' => substr($inputData, 0, 200),
+        'json_decode_result' => json_decode($inputData, true),
+        'json_last_error' => json_last_error_msg(),
+    ];
+} catch (Throwable $t) {
+    $diagnostics['php_input_test'] = [
+        'error' => $t->getMessage(),
     ];
 }
 
