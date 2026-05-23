@@ -425,9 +425,9 @@ body {
 }
 
 .big-number {
-  font-size: clamp(3.5rem, 15vw, 7rem);
+  font-size: clamp(5rem, 22vw, 8rem);
   font-weight: 800;
-  line-height: 1;
+  line-height: 0.95;
   letter-spacing: -4px;
 }
 
@@ -796,12 +796,6 @@ body {
 
   .tv-scoreboard {
     gap: var(--space-xl);
-  }
-}
-
-@media (min-width: 481px) and (max-width: 639px) {
-  .big-number {
-    font-size: 4rem;
   }
 }
 
