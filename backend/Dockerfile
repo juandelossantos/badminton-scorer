@@ -6,8 +6,11 @@ RUN a2enmod rewrite headers
 # Install PDO MySQL extension
 RUN docker-php-ext-install pdo pdo_mysql
 
-# Install curl for healthcheck
-RUN apt-get update && apt-get install -y curl
+# Install curl for healthcheck + unzip for composer
+RUN apt-get update && apt-get install -y curl unzip
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www/html
