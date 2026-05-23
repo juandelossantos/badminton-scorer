@@ -27,6 +27,8 @@ test.describe('Full match flow E2E', () => {
     const controllerContext = await browser.newContext({ viewport: { width: 375, height: 812 } })
     const controllerPage = await controllerContext.newPage()
     await controllerPage.goto(`${FRONTEND_URL}/match/${matchId}?token=${token}`)
+    // Wait for lazy-loaded component to render
+    await controllerPage.waitForTimeout(800)
 
     // Verify initial state on controller
     await expect(controllerPage.locator('.big-number.number-p1')).toHaveText('0')
@@ -37,6 +39,8 @@ test.describe('Full match flow E2E', () => {
     const tvContext = await browser.newContext({ viewport: { width: 1920, height: 1080 } })
     const tvPage = await tvContext.newPage()
     await tvPage.goto(`${FRONTEND_URL}/watch/${matchId}`)
+    // Wait for lazy-loaded component to render
+    await tvPage.waitForTimeout(800)
 
     // Verify initial state on TV
     await expect(tvPage.locator('.tv-number-p1')).toHaveText('0')
@@ -104,6 +108,8 @@ test.describe('Full match flow E2E', () => {
     // Open controller WITH token
     const controllerPage = await browser.newPage({ viewport: { width: 375, height: 812 } })
     await controllerPage.goto(`${FRONTEND_URL}/match/${matchId}?token=${token}`)
+    // Wait for lazy-loaded component to render
+    await controllerPage.waitForTimeout(800)
     await controllerPage.waitForSelector('.player-names', { state: 'visible' })
 
     // Verify all 4 names appear (two .player-names elements, one per side)

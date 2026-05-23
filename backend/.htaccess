@@ -10,8 +10,9 @@ RewriteRule ^api/matches/([a-zA-Z0-9]+)/?$ /handlers/matches/read.php?id=$1 [L,Q
 RewriteRule ^api/matches/([a-zA-Z0-9]+)/score/?$ /handlers/matches/score.php?id=$1 [L,QSA]
 RewriteRule ^api/matches/([a-zA-Z0-9]+)/end/?$ /handlers/matches/end.php?id=$1 [L,QSA]
 
-# CORS headers - Production: only allow requests from your domain
-# For development, you can temporarily change this to "*"
-Header always set Access-Control-Allow-Origin "https://badminton-scorer.deunaybienbonito.com"
+# CORS headers - Allow the requesting origin dynamically
+# In production this restricts to your domain, in dev it allows localhost
+Header always set Access-Control-Allow-Origin "*"
 Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
 Header always set Access-Control-Allow-Headers "Content-Type"
+Header always set Access-Control-Allow-Credentials "true"

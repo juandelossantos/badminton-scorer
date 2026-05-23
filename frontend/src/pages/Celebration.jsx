@@ -10,6 +10,7 @@ function Celebration() {
   const containerRef = useRef(null)
   const [match, setMatch] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const { playMatchWon } = useSound()
 
   const { reward } = useReward(containerRef, 'fireworks', {
@@ -24,7 +25,7 @@ function Celebration() {
         const data = await matchesApi.get(matchId)
         setMatch(data)
       } catch (err) {
-        console.error(err)
+        setError('Error al cargar partido')
       } finally {
         setLoading(false)
       }

@@ -1,132 +1,156 @@
 # Badminton Scorer
 
-Marcador de bádminton en tiempo real con URL compartible. Estilo hacker/terminal, bilingüe (ES/EN).
+Marcador de bádminton en tiempo real con URL compartible. Diseño estilo hacker/terminal, optimizado para árbitros en cancha y espectadores remotos.
+
+## Características Principales
+
+- 🏸 **Controlador en cancha** — Móvil portrait/landscape con botones grandes para árbitros
+- 📺 **Vista TV** — Números gigantes visibles a 20 metros, sincronización en tiempo real
+- 🔗 **URL compartible** — Cada partido tiene URL única de 8 caracteres
+- 🔒 **Seguridad** — Token de control privado evita que espectadores modifiquen el marcador
+- 🎵 **Sonidos 8-bit** — Retro tipo Mario al anotar punto, ganar set y ganar partido
+- 🎆 **Celebración** — Fuegos artificiales automáticos al terminar el partido
+- 🌙 **Dark/Light** — Toggle de tema con persistencia en localStorage
+- 📱 **Responsive** — Portrait (móvil), Landscape (móvil horizontal), TV (pantalla ancha)
+- ⚡ **Sin autenticación** — Abrir y jugar, sin registro
+
+## Stack Tecnológico
+
+| Capa | Tecnología |
+|---|---|
+| Frontend | React 19 + Vite + React Router DOM |
+| Backend | PHP 8.1 + PDO + MySQL 8.0 |
+| Sync | Polling HTTP cada 3 segundos |
+| Animaciones | Partycles (fireworks) |
+| Sonidos | Web Audio API (8-bit sintético) |
+| Hosting | Servidor propio (PHP + MySQL) |
 
 ## Estructura del Proyecto
 
 ```
 badminton-scorer/
-├── frontend/          # React SPA (Vite)
+├── frontend/               # React SPA (Vite)
 │   ├── src/
-│   │   ├── components/
-│   │   │   ├── common/           # Header, SetsBar, PlayersRow, AppFooter
-│   │   │   ├── create-match/     # Formulario nuevo partido
-│   │   │   ├── match-controller/ # Scoreboard, Controls (+/-, Finalizar)
-│   │   │   ├── match-tv/         # TVScoreboard, TVSetsBar, etc.
-│   │   │   └── celebration/      # Fireworks, resultados finales
-│   │   ├── pages/
-│   │   │   ├── HomePage.jsx
-│   │   │   ├── CreateMatchPage.jsx
-│   │   │   ├── MatchPage.jsx
-│   │   │   ├── MatchTVPage.jsx
-│   │   │   └── CelebrationPage.jsx
-│   │   ├── context/
-│   │   │   └── ThemeContext.jsx
-│   │   ├── api/
-│   │   │   └── matches.js
-│   │   └── styles/
-│   │       └── global.css
-│   ├── package.json
-│   ├── vite.config.js
-│   └── index.html
-├── backend/           # PHP REST API
-│   ├── api/
-│   │   └── matches/
-│   │       ├── create.php
-│   │       ├── read.php
-│   │       ├── undo.php
-│   │       └── end.php
-│   ├── config/
-│   │   └── database.php
-│   ├── models/
-│   │   └── Match.php
-│   └── .htaccess
+│   │   ├── pages/         # Home, CreateMatch, Match, MatchTV, ShareURL, Celebration
+│   │   ├── hooks/         # useSound (Web Audio API)
+│   │   ├── api/           # matches.js (API client)
+│   │   ├── context/       # ThemeContext (dark/light)
+│   │   ├── components/    # CanchaBG, Icons
+│   │   └── styles/        # global.css (design system)
+│   ├── e2e/               # Playwright E2E tests
+│   └── .env.production    # API URL para build
+├── backend/                # PHP REST API
+│   ├── handlers/          # create, read, score, end
+│   ├── models/            # MatchModel.php (business logic)
+│   ├── config/            # database.php
+│   └── .htaccess          # Rewrite rules + CORS
 ├── database/
-│   └── schema.sql
-├── DESIGN.md          # Sistema de diseño completo
-└── README.md
+│   └── prod-setup.sql     # Schema para producción
+├── DESIGN.md              # Sistema de diseño (tokens, colores, tipografía)
+├── spec.md                # Especificación funcional
+├── DEPLOY.md              # Guía de despliegue paso a paso
+└── PLAN.md                # Plan de implementación (22 tareas)
 ```
 
-## Pantallas / Rutas
+## Rutas
 
 | Pantalla | Ruta | Descripción |
 |---|---|---|
-| Home | `/` | Landing, botón "Nuevo Partido" |
-| Crear Partido | `/new` | Formulario: modo, jugadores, sets, puntos |
-| Controlador | `/match/:id` | Marcador con controles (+/-, Finalizar) |
-| TV Espectador | `/match/:id/tv` | Solo lectura, números grandes, solo dark |
-| Celebración | `/match/:id/result` | Fireworks + ganadores + resultados |
+| Inicio | `/` | Landing, botón "Nuevo Partido" |
+| Crear Partido | `/create` | Formulario: modo (individual/dobles), jugadores |
+| Compartir URLs | `/share` | Muestra URLs de controlador y TV |
+| Controlador | `/match/:id?token=...` | Suma/resta puntos (requiere token) |
+| TV Espectador | `/watch/:id` | Solo lectura, sin token |
+| Celebración | `/match/:id/celebration` | Ganador + fireworks |
 
-## Stack Tecnológico
+## Instalación Local
 
-- **Frontend**: React 18 + React Router DOM + Vite
-- **Backend**: PHP 7.4+ + PDO + MySQL 5.7+
-- **Sync**: Polling HTTP cada 2-3 segundos
-- **Hosting**: Servidor propio con PHP/MySQL
+### Prerrequisitos
+- Docker + Docker Compose
+- Node.js 18+
+- npm
 
-## Instalación
+### Backend (Docker)
+
+```bash
+# Levantar backend + MySQL + phpMyAdmin
+docker compose up -d
+
+# Verificar salud
+curl http://localhost:8000/api/health
+# → {"status":"ok","database":"connected"}
+```
 
 ### Frontend
 
 ```bash
 cd frontend
 npm install
-npm run dev        # Desarrollo en localhost:3000
-npm run build      # Producción en dist/
+npm run dev        # http://localhost:5173
 ```
 
-### Backend
+### Tests
 
-1. Copiar `backend/` al servidor web
-2. Importar `database/schema.sql` en MySQL
-3. Configurar variables de entorno o editar `backend/config/database.php`
-4. Asegurar que `.htaccess` esté activo
+```bash
+# Backend (PHPUnit)
+docker exec test-badminton-scorer-backend-1 php vendor/bin/phpunit
 
-### Variables de Entorno
-
-Crear `.env` en la raíz del proyecto:
-
-```
-DB_HOST=localhost
-DB_NAME=badminton_scorer
-DB_USER=root
-DB_PASS=your_password
+# E2E (Playwright)
+cd frontend
+npx playwright test
 ```
 
 ## API Endpoints
 
-| Método | Endpoint | Descripción |
-|---|---|---|
-| POST | `/api/matches` | Crear partido |
-| GET | `/api/matches?id={id}` | Obtener partido |
-| PUT | `/api/matches?id={id}` | Actualizar puntaje |
-| PUT | `/api/matches/undo?id={id}` | Deshacer |
-| PUT | `/api/matches/end?id={id}` | Finalizar partido |
-| DELETE | `/api/matches?id={id}` | Eliminar partido |
+| Método | Endpoint | Body | Descripción |
+|---|---|---|---|
+| POST | `/api/matches` | `{mode, player1[], player2[]}` | Crear partido |
+| GET | `/api/matches/:id` | — | Obtener partido |
+| PUT | `/api/matches/:id/score` | `{player, token, undo?}` | Sumar/restar punto |
+| PUT | `/api/matches/:id/end` | `{status, winner, token}` | Finalizar partido |
 
-## Características
+## Reglas de Bádminton Implementadas
 
-- ✅ Individual y Dobles
-- ✅ Marcador en tiempo real
-- ✅ Sincronización vía polling
-- ✅ URL compartible por partido
-- ✅ Vista TV para espectadores (solo dark, números grandes)
-- ✅ Cambio de servicio automático
-- ✅ Detección de ganador (21 pts, diferencia 2)
-- ✅ Botón "Finalizar" + pantalla de celebración con fireworks
-- ✅ Dark/Light toggle
-- ✅ Bilingüe: Español/Inglés
-- ✅ Responsive: Portrait, Landscape, TV
-
-## Reglas Implementadas
-
-- Puntos al 21 (o configurado al crear)
+- Sistema de puntos rally (1 punto por rally)
+- 21 puntos para ganar un set
 - Diferencia mínima de 2 puntos
-- Límite máximo: 30 puntos
-- Sets al mejor de 3, 5, etc.
-- Cambio de servicio cada 2 puntos
-- Cambio de lado cada set
+- Deuce hasta 30 puntos máximo
+- Partido al mejor de 3 sets (2 ganados)
+- Cambio de servicio según puntaje (par=derecha, impar=izquierda)
+- Detección automática de ganador de set y partido
+
+## Seguridad
+
+- `control_token` de 32 caracteres generado aleatoriamente por partido
+- Solo quien crea el partido recibe el token (en la URL del controlador)
+- El backend rechaza operaciones de puntuación sin token válido (401 Unauthorized)
+- Los espectadores ven `/watch/:id` (solo lectura, sin token)
+- Los árbitros controlan desde `/match/:id?token=...`
+
+## Despliegue
+
+Ver [DEPLOY.md](DEPLOY.md) para instrucciones completas de despliegue a producción.
+
+Resumen rápido:
+1. Importar `database/prod-setup.sql` en MySQL
+2. Configurar `.env` con credenciales de DB
+3. Subir `backend/` al servidor
+4. Compilar frontend con `npm run build`
+5. Subir `dist/` a `public_html/`
+6. Configurar `.htaccess` para SPA routing
+
+## Decisiones de Arquitectura
+
+- **Sin WebSockets**: Polling HTTP cada 3s en lugar de WebSockets para compatibilidad con hosting compartido
+- **Sin autenticación**: Partidos son efímeros (24h), no se guarda historial
+- **Token en URL**: Simplifica el flujo sin requerir login/cookies
+- **Vertical slicing**: Cada feature implementada de punta a punta (DB → API → UI)
+- **TDD obligatorio**: PHPUnit para backend, Playwright para E2E
 
 ## Licencia
 
 MIT
+
+---
+
+> **Nota:** Este proyecto fue construido con workflow skill-driven usando especificaciones detalladas en `spec.md` y `DESIGN.md`.
