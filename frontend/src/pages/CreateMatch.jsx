@@ -9,8 +9,6 @@ function CreateMatch() {
   const [p1Partner, setP1Partner] = useState('')
   const [p2Name, setP2Name] = useState('')
   const [p2Partner, setP2Partner] = useState('')
-  const [setsToWin, setSetsToWin] = useState(3)
-  const [pointsPerSet, setPointsPerSet] = useState(21)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -44,8 +42,6 @@ function CreateMatch() {
         mode,
         player1,
         player2,
-        sets_to_win: parseInt(setsToWin),
-        points_per_set: parseInt(pointsPerSet),
       })
       navigate('/share', { state: { match } })
     } catch (err) {
@@ -120,25 +116,6 @@ function CreateMatch() {
               required
             />
           )}
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label>Sets para ganar</label>
-            <select value={setsToWin} onChange={e => setSetsToWin(e.target.value)}>
-              <option value={1}>1</option>
-              <option value={2}>2</option>
-              <option value={3}>3</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label>Puntos por set</label>
-            <select value={pointsPerSet} onChange={e => setPointsPerSet(e.target.value)}>
-              <option value={11}>11</option>
-              <option value={15}>15</option>
-              <option value={21}>21</option>
-            </select>
-          </div>
         </div>
 
         {error && <p className="form-error">{error}</p>}

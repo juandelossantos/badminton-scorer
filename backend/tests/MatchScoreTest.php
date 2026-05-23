@@ -142,22 +142,24 @@ class MatchScoreTest extends TestCase
         $match = $this->matchModel->create([
             'mode' => 'singles',
             'player1' => ['Juan'],
-            'player2' => ['Pedro'],
-            'sets_to_win' => 1,
-            'points_per_set' => 5
+            'player2' => ['Pedro']
         ]);
 
-        // Win the only set needed
-        for ($i = 0; $i < 5; $i++) {
-            $this->matchModel->updateScore($match['id'], 1);
-        }
+        // Win first set: put P1 at 20, then score
+        $this->db->prepare("UPDATE matches SET current_p1 = 20 WHERE id = :id")
+            ->execute([':id' => $match['id']]);
+        $this->matchModel->updateScore($match['id'], 1);
+
+        // Win second set: put P1 at 20 in set 2, then score
+        $this->db->prepare("UPDATE matches SET current_p1 = 20 WHERE id = :id")
+            ->execute([':id' => $match['id']]);
+        $this->matchModel->updateScore($match['id'], 1);
         
         $updated = $this->matchModel->getById($match['id']);
         
         $this->assertEquals('completed', $updated['status']);
         $this->assertEquals(1, $updated['winner']);
-        $this->assertEquals(5, $updated['sets'][0]['p1']);
-        $this->assertEquals(0, $updated['sets'][0]['p2']);
+        $this->assertCount(2, $updated['sets']);
     }
 
     public function testUpdateScoreOnCompletedMatchThrowsException(): void
@@ -167,13 +169,13 @@ class MatchScoreTest extends TestCase
         $match = $this->matchModel->create([
             'mode' => 'singles',
             'player1' => ['Juan'],
-            'player2' => ['Pedro'],
-            'sets_to_win' => 1,
-            'points_per_set' => 5
+            'player2' => ['Pedro']
         ]);
 
-        // Win the match
-        for ($i = 0; $i < 5; $i++) {
+        // Win the match (2 sets)
+        for ($set = 0; $set < 2; $set++) {
+            $this->db->prepare("UPDATE matches SET current_p1 = 20 WHERE id = :id")
+                ->execute([':id' => $match['id']]);
             $this->matchModel->updateScore($match['id'], 1);
         }
         
@@ -186,15 +188,13 @@ class MatchScoreTest extends TestCase
         $match = $this->matchModel->create([
             'mode' => 'singles',
             'player1' => ['Juan'],
-            'player2' => ['Pedro'],
-            'sets_to_win' => 3,
-            'points_per_set' => 5
+            'player2' => ['Pedro']
         ]);
 
-        // Win first set (server will end on some side)
-        for ($i = 0; $i < 5; $i++) {
-            $this->matchModel->updateScore($match['id'], 1);
-        }
+        // Win first set
+        $this->db->prepare("UPDATE matches SET current_p1 = 20 WHERE id = :id")
+            ->execute([':id' => $match['id']]);
+        $this->matchModel->updateScore($match['id'], 1);
         
         $updated = $this->matchModel->getById($match['id']);
         

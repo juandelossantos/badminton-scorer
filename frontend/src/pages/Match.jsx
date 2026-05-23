@@ -84,7 +84,6 @@ function Match() {
 
   const p1SetsWon = match.sets.filter(s => s.p1 > s.p2).length
   const p2SetsWon = match.sets.filter(s => s.p2 > s.p1).length
-  const totalSets = match.sets_to_win * 2 - 1
 
   // Determine server status text
   const p1IsServer = match.server === 1
@@ -127,7 +126,7 @@ function Match() {
           </span>
         )}
         <span className="current-set-badge">
-          Set {match.current_set}/{totalSets}
+          Set {match.current_set}
         </span>
       </div>
 

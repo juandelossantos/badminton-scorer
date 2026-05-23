@@ -45,8 +45,9 @@ class MatchModel
         }
         
         $id = $this->generateId();
-        $setsToWin = $data['sets_to_win'] ?? 3;
-        $pointsPerSet = $data['points_per_set'] ?? 21;
+        // Badminton rules: always best of 3 sets, 21 points per set
+        $setsToWin = 2;
+        $pointsPerSet = 21;
         
         $stmt = $this->db->prepare("
             INSERT INTO matches (

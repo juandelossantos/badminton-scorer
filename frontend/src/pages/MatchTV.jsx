@@ -34,7 +34,6 @@ function MatchTV() {
   if (error) return <div className="page tv-page error">Error: {error}</div>
   if (!match) return <div className="page tv-page error">Partido no encontrado</div>
 
-  const totalSets = match.sets_to_win * 2 - 1
   const p1SetsWon = match.sets.filter(s => s.p1 > s.p2).length
   const p2SetsWon = match.sets.filter(s => s.p2 > s.p1).length
 
@@ -50,7 +49,7 @@ function MatchTV() {
             </span>
           ))}
           <span className="tv-current-set">
-            Set {match.current_set}/{totalSets}
+            Set {match.current_set}
           </span>
         </div>
       </header>

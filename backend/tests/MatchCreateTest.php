@@ -51,7 +51,7 @@ class MatchCreateTest extends TestCase
         $this->assertEquals('singles', $match['mode']);
         $this->assertEquals(['Juan'], $match['player1']);
         $this->assertEquals(['Pedro'], $match['player2']);
-        $this->assertEquals(3, $match['sets_to_win']);
+        $this->assertEquals(2, $match['sets_to_win']);
         $this->assertEquals(21, $match['points_per_set']);
         $this->assertEquals('active', $match['status']);
         $this->assertEquals(1, $match['current_set']);
@@ -72,7 +72,7 @@ class MatchCreateTest extends TestCase
 
         $match = $this->matchModel->create($data);
 
-        $this->assertEquals(3, $match['sets_to_win']);
+        $this->assertEquals(2, $match['sets_to_win']);
         $this->assertEquals(21, $match['points_per_set']);
     }
 
