@@ -143,7 +143,7 @@ function CreateMatch() {
 
         {error && <p className="form-error">{error}</p>}
 
-        <button type="submit" className="btn btn-primary btn-large" disabled={loading}>
+        <button type="submit" className="btn btn-primary" disabled={loading}>
           {loading ? 'Creando...' : 'CREAR PARTIDO'}
         </button>
       </form>
