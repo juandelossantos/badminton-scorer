@@ -66,6 +66,28 @@ Phase 7: Ship (Deploy)
 
 ## Task List
 
+### Phase 0: Project Setup ✅ COMPLETED
+
+#### Task 0: Git Repository Init
+**Description:** Inicializar repo git, crear .gitignore, hacer primer commit con DESIGN.md + spec.md + PLAN.md. Crear repo remoto en GitHub.
+
+**Acceptance criteria:**
+- [x] `git init` ejecutado
+- [x] `.gitignore` creado (node_modules, dist, .env, previews, .playwright-mcp)
+- [x] Primer commit con todos los archivos de spec
+- [x] Repo remoto creado en GitHub y push realizado
+
+**Verification:**
+```bash
+git log --oneline  # muestra commit inicial
+git remote -v      # muestra origin https://github.com/.../badminton-scorer
+```
+
+**Status:** ✅ DONE — Commit `f820d65`
+**Files touched:** `.gitignore`, `DESIGN.md`, `spec.md`, `PLAN.md`, `AGENTS.md`, `README.md`
+
+---
+
 ### Phase 1: Foundation
 
 #### Task 1: Docker Compose Setup (Backend ONLY)
